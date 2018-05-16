@@ -988,84 +988,9 @@ void RobotisController::process()
         fprintf(stderr, "(%2.6f) BulkRead Rx & update state \n", time_duration.nsec * 0.000001);
       }
 
-      // SyncWrite
-      queue_mutex_.lock();
-
-      if (direct_sync_write_.size() > 0)
-      {
-        for (int i = 0; i < direct_sync_write_.size(); i++)
-        {
-          direct_sync_write_[i]->txPacket();
-          direct_sync_write_[i]->clearParam();
-        }
-        direct_sync_write_.clear();
-      }
-
-      if (port_to_sync_write_position_p_gain_.size() > 0)
-      {
-        for (auto& it : port_to_sync_write_position_p_gain_)
-        {
-          it.second->txPacket();
-          it.second->clearParam();
-        }
-      }
-      if (port_to_sync_write_position_i_gain_.size() > 0)
-      {
-        for (auto& it : port_to_sync_write_position_i_gain_)
-        {
-          it.second->txPacket();
-          it.second->clearParam();
-        }
-      }
-      if (port_to_sync_write_position_d_gain_.size() > 0)
-      {
-        for (auto& it : port_to_sync_write_position_d_gain_)
-        {
-          it.second->txPacket();
-          it.second->clearParam();
-        }
-      }
-      if (port_to_sync_write_velocity_p_gain_.size() > 0)
-      {
-        for (auto& it : port_to_sync_write_velocity_p_gain_)
-        {
-          it.second->txPacket();
-          it.second->clearParam();
-        }
-      }
-      if (port_to_sync_write_velocity_i_gain_.size() > 0)
-      {
-        for (auto& it : port_to_sync_write_velocity_i_gain_)
-        {
-          it.second->txPacket();
-          it.second->clearParam();
-        }
-      }
-      if (port_to_sync_write_velocity_d_gain_.size() > 0)
-      {
-        for (auto& it : port_to_sync_write_velocity_d_gain_)
-        {
-          it.second->txPacket();
-          it.second->clearParam();
-        }
-      }
-      for (auto& it : port_to_sync_write_position_)
-      {
-        if (it.second != NULL)
-          it.second->txPacket();
-      }
-      for (auto& it : port_to_sync_write_velocity_)
-      {
-        if (it.second != NULL)
-          it.second->txPacket();
-      }
-      for (auto& it : port_to_sync_write_current_)
-      {
-        if (it.second != NULL)
-          it.second->txPacket();
-      }
-
-      queue_mutex_.unlock();
+      //
+      // SyncWrite code block is moved to line 1324.
+      // 
 
       // BulkRead Tx
       for (auto& it : port_to_bulk_read_)
@@ -1388,6 +1313,94 @@ void RobotisController::process()
 
       queue_mutex_.unlock();
     }
+
+
+    // ##################################################################
+    // 
+    // 2018/ 5/ 16 
+    //   SyncWrite code block moved for to reduce actuator latency.
+    // 
+    // ##################################################################
+    // SyncWrite
+    queue_mutex_.lock();
+
+    if (direct_sync_write_.size() > 0)
+    {
+      for (int i = 0; i < direct_sync_write_.size(); i++)
+      {
+        direct_sync_write_[i]->txPacket();
+        direct_sync_write_[i]->clearParam();
+      }
+      direct_sync_write_.clear();
+    }
+
+    if (port_to_sync_write_position_p_gain_.size() > 0)
+    {
+      for (auto& it : port_to_sync_write_position_p_gain_)
+      {
+        it.second->txPacket();
+        it.second->clearParam();
+      }
+    }
+    if (port_to_sync_write_position_i_gain_.size() > 0)
+    {
+      for (auto& it : port_to_sync_write_position_i_gain_)
+      {
+        it.second->txPacket();
+        it.second->clearParam();
+      }
+    }
+    if (port_to_sync_write_position_d_gain_.size() > 0)
+    {
+      for (auto& it : port_to_sync_write_position_d_gain_)
+      {
+        it.second->txPacket();
+        it.second->clearParam();
+      }
+    }
+    if (port_to_sync_write_velocity_p_gain_.size() > 0)
+    {
+      for (auto& it : port_to_sync_write_velocity_p_gain_)
+      {
+        it.second->txPacket();
+        it.second->clearParam();
+      }
+    }
+    if (port_to_sync_write_velocity_i_gain_.size() > 0)
+    {
+      for (auto& it : port_to_sync_write_velocity_i_gain_)
+      {
+        it.second->txPacket();
+        it.second->clearParam();
+      }
+    }
+    if (port_to_sync_write_velocity_d_gain_.size() > 0)
+    {
+      for (auto& it : port_to_sync_write_velocity_d_gain_)
+      {
+        it.second->txPacket();
+        it.second->clearParam();
+      }
+    }
+    for (auto& it : port_to_sync_write_position_)
+    {
+      if (it.second != NULL)
+        it.second->txPacket();
+    }
+    for (auto& it : port_to_sync_write_velocity_)
+    {
+      if (it.second != NULL)
+        it.second->txPacket();
+    }
+    for (auto& it : port_to_sync_write_current_)
+    {
+      if (it.second != NULL) {
+        it.second->txPacket();
+        //fprintf(stderr, "port_to_sync_write_current txPacket \n");
+      }
+    }
+    queue_mutex_.unlock();
+    // SyncWrite end
 
     if (DEBUG_PRINT)
     {

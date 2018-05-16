@@ -2,6 +2,11 @@
 Changelog for package robotis_controller
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.2.9 (2018-05-16)
+------------------
+* forked repository
+* changed robotis_controller syncwrite timing.
+
 0.2.9 (2018-03-22)
 ------------------
 * added serivce for setting module
